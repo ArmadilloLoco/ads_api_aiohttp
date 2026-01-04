@@ -1,12 +1,16 @@
 FROM python:3.11-slim
 
-WORKDIR /aiohttp
+WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app_aiohttp.py .
+COPY app/ ./
 
-EXPOSE 8080
+RUN mkdir -p data && touch data/ads.db
 
-CMD ["python", "app_aiohttp.py"]
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+CMD ["python", "main.py"]

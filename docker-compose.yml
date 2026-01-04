@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    working_dir: /app
+    restart: unless-stopped
+    environment:
+      - JWT_KEY=jwt-key
+      - DATABASE_URL=sqlite+aiosqlite:///./data/ads.db
