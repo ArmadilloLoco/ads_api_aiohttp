@@ -62,7 +62,7 @@ async def get_ad(request):
         ad_id = int(request.match_info["ad_id"])
 
     except ValueError:
-        return web.json_response({"error": "Неверный ID объявления"}, status=400)
+        return web.json_response({"error": "Invalid ad ID"}, status=400)
     
     session = request["db_session"]
 
@@ -70,7 +70,7 @@ async def get_ad(request):
     ad = result.scalar_one_or_none()
     
     if ad is None:
-        return web.json_response({"error": "Объявление не найдено"}, status=404)
+        return web.json_response({"error": "The ad was not found"}, status=404)
     
     return web.json_response({
         "id": ad.id,
@@ -87,7 +87,7 @@ async def update_ad(request):
         ad_id = int(request.match_info["ad_id"])
 
     except ValueError:
-        return web.json_response({"error": "Неверный ID объявления"}, status=400)
+        return web.json_response({"error": "Invalid ad ID"}, status=400)
     
     session = request["db_session"]
 
@@ -95,10 +95,10 @@ async def update_ad(request):
     ad = result.scalar_one_or_none()
     
     if ad is None:
-        return web.json_response({"error": "Объявление не найдено"}, status=404)
+        return web.json_response({"error": "The ad was not found"}, status=404)
     
     if ad.owner_id != request["current_user_id"]:
-        return web.json_response({"error": "Вы не являетесь автором"}, status=403)
+        return web.json_response({"error": "You are not the owner"}, status=403)
     
     try: # валидация
         ad_data = AdCreate(**await request.json())
@@ -125,7 +125,7 @@ async def delete_ad(request):
         ad_id = int(request.match_info["ad_id"])
 
     except ValueError:
-        return web.json_response({"error": "Неверный ID объявления"}, status=400)
+        return web.json_response({"error": "Invalid ad ID"}, status=400)
     
     session = request["db_session"]
 
@@ -133,10 +133,10 @@ async def delete_ad(request):
     ad = result.scalar_one_or_none()
     
     if ad is None:
-        return web.json_response({"error": "Объявление не найдено"}, status=404)
+        return web.json_response({"error": "The ad was not found"}, status=404)
     
     if ad.owner_id != request["current_user_id"]:
-        return web.json_response({"error": "Вы не являетесь автором"}, status=403)
+        return web.json_response({"error": "You are not the owner"}, status=403)
     
     await session.delete(ad)
     await session.commit()

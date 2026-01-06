@@ -26,7 +26,7 @@ def require_auth(handler):
         # Проверяем, что заголовок начинается с "Bearer "
         if not auth_header or not auth_header.startswith("Bearer "):
             return web.json_response(
-                {"error": "A title is required: Authorization: Bearer <токен>"}, 
+                {"error": "A title is required: Authorization: Bearer <token>"}, 
                 status=401
             )
         

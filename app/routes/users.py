@@ -11,6 +11,7 @@ async def register(request):
     """Регистрация нового пользователя"""
     try:  # валидация данных
         user_data = UserRegister(**await request.json())
+
     except Exception as e:
         return web.json_response({"error": str(e)}, status=400)
 
@@ -36,6 +37,7 @@ async def login(request):
     """Авторизация пользователя"""
     try:
         user_data = UserRegister(**await request.json())
+        
     except Exception as e:
         return web.json_response({"error": str(e)}, status=400)
 
