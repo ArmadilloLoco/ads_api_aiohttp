@@ -1,12 +1,22 @@
 import asyncio
 from aiohttp import web
+# custom
 from routes.users import register, login
 from routes.ads import create_ad, get_ads, get_ad, update_ad, delete_ad
-from database import init_db
+from database import init_db, db_session_middleware 
+
+@web.middleware
+async def debug_middleware(request, handler):
+    try:
+        return await handler(request)
+    except Exception as e:
+        print("DEBUG ERROR:", repr(e))  # ← вывод в лог контейнера
+        raise  # ← пробросим дальше, чтобы увидеть полный traceback
 
 def create_app():
     """Создание приложения"""
-    app = web.Application()
+    app = web.Application(middlewares=[debug_middleware, db_session_middleware])
+    #app = web.Application(middlewares=[db_session_middleware])
     app.add_routes([
         web.post('/register', register),
         web.post('/login', login),
@@ -17,6 +27,7 @@ def create_app():
         web.delete('/ads/{ad_id}', delete_ad),
     ])
     return app
+
 
 async def main():
     await init_db()

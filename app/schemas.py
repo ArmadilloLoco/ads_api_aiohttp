@@ -9,7 +9,8 @@ class AdCreate(BaseModel):
     description: str
 
     @field_validator("title")
-    def validate_title(cls, v):
-        """Проверка длины заголовка"""
+    @classmethod
+    def validate_title(cls, v: str) -> str:
         if len(v) < 3 or len(v) > 100:
-            raise ValueError("Длина заголовка должна быть от 3 до 100 символов")
+            raise ValueError("Title must be between 3 and 100 characters")
+        return v

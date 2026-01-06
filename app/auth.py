@@ -1,6 +1,7 @@
 import jwt
 from jwt.exceptions import InvalidTokenError
 from aiohttp import web
+# custom
 from config import JWT_KEY, JWT_ALGORITHM
 
 def create_jwt_token(user_id: int) -> str:
@@ -25,7 +26,7 @@ def require_auth(handler):
         # Проверяем, что заголовок начинается с "Bearer "
         if not auth_header or not auth_header.startswith("Bearer "):
             return web.json_response(
-                {"error": "Требуется заголовок: Authorization: Bearer <токен>"}, 
+                {"error": "A title is required: Authorization: Bearer <токен>"}, 
                 status=401
             )
         
@@ -33,7 +34,7 @@ def require_auth(handler):
         
         user_id = decode_jwt_token(token) # Проверяем токен
         if user_id is None:
-            return web.json_response({"error": "Неверный токен"}, status=401)
+            return web.json_response({"error": "Invalid token"}, status=401)
         
         request["current_user_id"] = user_id # Передаём user_id в запрос
         
