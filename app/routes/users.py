@@ -1,6 +1,6 @@
 from aiohttp import web
-from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import select
+import bcrypt
 # custom
 from models import User
 from schemas import UserRegister 
@@ -23,9 +23,13 @@ async def register(request):
         return web.json_response({"error": "The user already exists"}, status=409)
 
     # ORM: создание объекта
+    password_hash = bcrypt.hashpw(
+        user_data.password.encode('utf-8'),
+        bcrypt.gensalt()
+    ).decode('utf-8') 
     new_user = User(
         email=user_data.email,
-        password_hash=generate_password_hash(user_data.password)
+        password_hash=password_hash
     )
     session.add(new_user)
     await session.commit()
@@ -46,7 +50,10 @@ async def login(request):
     result = await session.execute(select(User).where(User.email == user_data.email))
     user = result.scalar_one_or_none()
 
-    if not user or not check_password_hash(user.password_hash, user_data.password):
+    if not bcrypt.checkpw(
+        user_data.password.encode('utf-8'),
+        user.password_hash.encode('utf-8')
+    ):
         return web.json_response({"error": "Invalid credentials"}, status=401)
 
     token = create_jwt_token(user.id)
